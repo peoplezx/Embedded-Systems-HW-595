@@ -21,6 +21,7 @@ int sw6 = 9;
 int sw7 = 10;
 int sw8 = 7;
 
+//toggle
 int tsw1 = 0;
 int tsw2 = 0;
 int tsw3 = 0;
@@ -30,6 +31,8 @@ int tsw6 = 0;
 int tsw7 = 0;
 int tsw8 = 0;
 
+//array of state
+int state[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 void setup() {
   //set pins to output because they are addressed in the main loop
@@ -50,7 +53,7 @@ void setup() {
   Serial.println("*");
 
   // Always start by setting SRCLR high
-//  digitalWrite( clearPin, HIGH);
+  //  digitalWrite( clearPin, HIGH);
 
   // delay a little and then set
   delay(100);
@@ -62,11 +65,10 @@ void loop() {
     delay(50);
     tsw1 = 1 - tsw1;
     if (tsw1 == 1) {
-
-      registerWrite((sw1 - 2), HIGH);
+      state[0] = 1;
       delay( 50 );
     } else {
-      registerWrite((sw1 - 2), LOW);
+      state[0] = 0;
       delay( 50 );
     }
   }
@@ -76,11 +78,10 @@ void loop() {
     delay(50);
     tsw2 = 1 - tsw2;
     if (tsw2 == 1) {
-
-      registerWrite((sw2 - 2), HIGH);
+      state[1] = 1;
       delay( 50 );
     } else {
-      registerWrite((sw2 - 2), LOW);
+      state[1] = 0;
       delay( 50 );
     }
   }
@@ -89,11 +90,10 @@ void loop() {
     delay(50);
     tsw3 = 1 - tsw3;
     if (tsw3 == 1) {
-
-      registerWrite((sw3 - 2), HIGH);
+      state[2] = 1;
       delay( 50 );
     } else {
-      registerWrite((sw3 - 2), LOW);
+      state[2] = 0;
       delay( 50 );
     }
   }
@@ -102,11 +102,10 @@ void loop() {
     delay(50);
     tsw4 = 1 - tsw4;
     if (tsw4 == 1) {
-
-      registerWrite((sw4 - 2), HIGH);
+      state[3] = 1;
       delay( 50 );
     } else {
-      registerWrite((sw4 - 2), LOW);
+      state[3] = 0;
       delay( 50 );
     }
   }
@@ -115,11 +114,10 @@ void loop() {
     delay(50);
     tsw5 = 1 - tsw5;
     if (tsw5 == 1) {
-
-      registerWrite((sw5 - 2), HIGH);
+      state[4] = 1;
       delay( 50 );
     } else {
-      registerWrite((sw5 - 2), LOW);
+      state[4] = 0;
       delay( 50 );
     }
   }
@@ -128,11 +126,10 @@ void loop() {
     delay(50);
     tsw6 = 1 - tsw6;
     if (tsw6 == 1) {
-
-      registerWrite((sw6 - 4), HIGH);
+      state[5] = 1;
       delay( 50 );
     } else {
-      registerWrite((sw6 - 4), LOW);
+      state[5] = 0;
       delay( 50 );
     }
   }
@@ -141,50 +138,51 @@ void loop() {
     delay(50);
     tsw7 = 1 - tsw7;
     if (tsw7 == 1) {
-
-      registerWrite((sw7 - 4), HIGH);
+      state[6] = 1;
       delay( 50 );
     } else {
-      registerWrite((sw7 - 4), LOW);
+      state[6] = 0;
       delay( 50 );
     }
   }
-
-
 
   if (digitalRead(sw8) == 0) {
     delay(50);
     tsw8 = 1 - tsw8;
     if (tsw8 == 1) {
-
-      registerWrite((sw8), HIGH);
+      state[7] = 1;
       delay( 50 );
     } else {
-      registerWrite((sw8), LOW);
+      state[7] = 0;
       delay( 50 );
     }
   }
-
+  registerWrite(state);
   delay( 100 );
 }
 
 // This method sends bits to the shift register:
 
-void registerWrite(int whichPin, int whichState) {
-  Serial.println(whichPin);
+void registerWrite(int state[]) {
+  //  Serial.println(whichPin);
 
   // the bits you want to send
   byte bitsToSend = 0;
   // write number as bits
-  bitWrite(bitsToSend, whichPin, whichState);
+  bitWrite(bitsToSend, 0, state[0]);
+  bitWrite(bitsToSend, 1, state[1]);
+  bitWrite(bitsToSend, 2, state[2]);
+  bitWrite(bitsToSend, 3, state[3]);
+  bitWrite(bitsToSend, 4, state[4]);
+  bitWrite(bitsToSend, 5, state[5]);
+  bitWrite(bitsToSend, 6, state[6]);
+  bitWrite(bitsToSend, 7, state[7]);
 
   // turn off the output so the pins don't light up
   // while you're shifting bits:
   digitalWrite(latchPin, LOW);
-  Serial.println(bitsToSend);
-  Serial.println("_");
 
-  // shift the bits out
+  //digitalWrite(clockPin, LOW);
   shiftOut(dataPin, clockPin, MSBFIRST, bitsToSend);
 
   // turn on the output so the LEDs can light up:
